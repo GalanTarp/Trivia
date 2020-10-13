@@ -1,0 +1,23 @@
+{
+  "name": "game",
+  "version": "1.0.0",
+  "description": "Trivia game",
+  "main": "play.js",
+  "dependencies": {
+    "firebase": "^7.21.0",
+    "firebaseui": "^4.6.1",
+    "jquery": "^3.5.1",
+    "prompt": "^1.0.0"
+  },
+  "devDependencies": {
+    "cli-interact": "^0.1.9"
+  },
+  "scripts": {
+    "test": "-o"
+  },
+  "keywords": [
+    "game"
+  ],
+  "author": "AlbertoGalanLopez",
+  "license": "ISC"
+}
