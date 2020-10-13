@@ -31,7 +31,8 @@ var questions = new Array(),
   // I do in that way of require because when run JS doesn't wor this way (ES6Module):
   // import { createInterface } from "readline"
   readline = require("readline"),
-  xml = require("XMLHttpRequest");
+  xml = require("XMLHttpRequest"),
+  fs = require("fs");
 
 // PRINCIPAL FUNCTION 1.0
 // Function Start
@@ -73,7 +74,7 @@ function Start() {
       // Clear the terminal in 2 seconds
       setTimeout(() => {
         console.clear();
-        console.log("SCORES");
+        GetScores();
       }, 1000);
     }
 
@@ -86,7 +87,7 @@ function Start() {
       // Clear the terminal in 2 seconds
       setTimeout(() => {
         console.clear();
-        SelectCategories();
+        GetCategories();
       }, 1000);
     }
   });
@@ -126,21 +127,28 @@ function StandardGame() {
 
 // PRINCIPAL FUNCTION 1.2
 // Get scores and prints
+function GetScores() {
+  // Reading data in utf-8 format
+  // which is a type of character set.
+  fs.readFile("scores.txt", "utf-8", (err, data) => {
+    if (err) throw err;
+
+    // Converting Raw Buffer to text
+    // data using tostring function.
+    console.log(data);
+  });
+  
+}
 
 // PRINCIPAL FUNCTION 1.3
 // Select one of the list of categories
-function SelectCategories() {
+function GetCategories() {
   // Variables
   var // Call XMLHttpRequest to receive the trivia questions of the API Open Trivia Database
     xhr = new xml.XMLHttpRequest(),
-    url = "https://opentdb.com/api_category.php";
-  // Create interface for inputs and outputs
-  rl = new readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  }),
-  // Array of categories
-  categories = new Array();
+    url = "https://opentdb.com/api_category.php",
+    // Array of categories
+    categories = new Array();
 
   xhr.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
@@ -155,58 +163,123 @@ function SelectCategories() {
         categories.push(category);
       }
 
-      // Information to Player
-      console.log(" ~<( TRIVIA GAME )>~ \n", "Select one category \n ");
-
-      // Table with an array of the categories names
-      console.table(categories, ["name"]);
-
-      rl.question("Your answer is: ", function (answer) {
-
-        // Check that answer is inside parameters of answers
-        if ((answer >= 0 && answer < categories.length) && answer != '') {
-          // Save categorySelected
-          var categorySelected = categories[answer];
-          console.log('You selected ', categorySelected.name, ' Category')
-          // Close this readline
-          rl.close();
-          rl = null;
-
-          // Go to the next question and clean the terminal
-          setTimeout(() => {
-            console.clear();
-            GetQuizCustom(categorySelected);
-          }, 3000);
-        } else {
-          // The input is not valid
-          console.log('Your answer is not valid.');
-          console.log(
-            'Must be between 0 and ', categories.length-1, ' depends of the index of the answers'
-          );
-
-          // Close this readline
-          rl.close();
-          rl = null;
-
-          //repeat the question and clean the terminal
-          setTimeout(() => {
-            console.clear();
-            SelectCategories();
-          }, 3000);
-        }
-      });
+      // Select category
+      SelectCategories(categories);
     }
   };
   xhr.open("GET", url, true);
   xhr.send();
 }
 
-// AUXILIAR FUNCTION 1.3.1
+// AUXILLIAR FUNCTION 1.3.1
+// Select custom category
+function SelectCategories(categories) {
+  // Variables
+  var // Create interface for inputs and outputs
+    rl = new readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+  // Information to Player
+  console.log(" ~<( TRIVIA GAME )>~ \n", "Select one category \n ");
+
+  // Table with an array of the categories names
+  console.table(categories, ["name"]);
+
+  rl.question("Your answer is: ", function (answer) {
+    // Check that answer is inside parameters of answers
+    if (answer >= 0 && answer < categories.length && answer != "") {
+      // Save categorySelected
+      var categorySelected = categories[answer];
+      console.log("You selected ", categorySelected.name, " Category");
+      // Close this readline
+      rl.close();
+      rl = null;
+
+      // Ask number of questions and clean the terminal
+      setTimeout(() => {
+        console.clear();
+        SelectNumberQuestions(categorySelected);
+      }, 3000);
+    } else {
+      // The input is not valid
+      console.log("Your answer is not valid.");
+      console.log(
+        "Must be between 0 and ",
+        categories.length - 1,
+        " depends of the index of the answers"
+      );
+
+      // Close this readline
+      rl.close();
+      rl = null;
+
+      //repeat the question and clean the terminal
+      setTimeout(() => {
+        console.clear();
+        SelectCategories();
+      }, 3000);
+    }
+  });
+}
+
+// AUXILIAR FUNCTION 1.3.2
+// Ask the number of questions
+function SelectNumberQuestions(cat) {
+  // Variables
+  var // Create interface for inputs and outputs
+    rl = new readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+  // Information to Player
+  console.log(
+    " ~<( TRIVIA GAME )>~ \n",
+    "Write the total of questions you going to answer (MIN 10 & MAX 50)************************** \n "
+  );
+
+  //Start function depends os the answer of Player
+  rl.question("Your answer is: ", function (answer) {
+    // Check that answer is inside parameters of answers
+    if (answer >= 10 && answer < 50 && answer != "") {
+      var total = answer;
+      // Close this readline
+      rl.close();
+      rl = null;
+
+      // Get quiz and clean the terminal
+      setTimeout(() => {
+        console.clear();
+        GetQuizCustom(cat, total);
+      }, 3000);
+    } else {
+      // The input is not valid
+      console.log("Your answer is not valid.");
+      console.log("Must be 0, 1, 2 or 3 depends of the index of the answers");
+      console.log("Or 0 or 1, depends of the type of the question");
+
+      // Close this readline
+      rl.close();
+      rl = null;
+
+      //repeat the question and clean the terminal
+      setTimeout(() => {
+        console.clear();
+        SelectNumberQuestions(cat);
+      }, 3000);
+    }
+  });
+}
+
+// AUXILIAR FUNCTION 1.3.3
 // Get Custom Json of question of a specific category
-function GetQuizCustom(category){
+function GetQuizCustom(category, n) {
   // Call XMLHttpRequest to receive the trivia questions of the API Open Trivia Database
   var xhr = new xml.XMLHttpRequest(),
-    url = "https://opentdb.com/api.php?amount=10&category=" + category.id;
+    url =
+      "https://opentdb.com/api.php?amount=" + n + "&category=" + category.id;
 
   xhr.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
@@ -250,13 +323,15 @@ function MakeQuestion() {
       " ~<( TRIVIA GAME )>~ \n",
       "This is the ",
       indexquestion + 1,
-      " of 10 questions \n",
+      " of ",
+      questions.length,
+      " questions \n",
       "SCORE: ",
       score,
       "\n \n",
       "QUESTION: \n",
       questions[indexquestion].question,
-      " \n",
+      "\n \n",
       "ANSWERS: \n"
     );
 
@@ -274,7 +349,7 @@ function MakeQuestion() {
       }
 
       // Check that answer is inside parameters of answers
-      if ((answer >= 0 && answer < aux) && answer != '') {
+      if (answer >= 0 && answer < aux && answer != "") {
         // Check Correct answer
         if (answersRamdom[answer] == questions[indexquestion].correct_answer) {
           console.log("It's correct. Good work.");
@@ -313,9 +388,21 @@ function MakeQuestion() {
       }
     });
   } else {
+    // THE END
     // Finish the game
-    console.log('\n Your score is ', (score/questions.length)*100, '% \n',
-    'Thanks for playing')
+    var s = (score / questions.length) * 100;
+    // date = new Date.now();
+
+    console.log(
+      "\n Your score is ",
+      s,
+      "% \n",
+      "Thanks for playing"
+    );
+    fs.appendFile('scores.txt', 'Date: ' + timeConverter(0)+ ' | Score: ' + s +' % \n', function (err) {
+      if (err) throw err;
+      console.log(' Score saved!');
+    });
     process.stdin.destroy();
   }
 }
@@ -349,6 +436,21 @@ function shuffleArray(array) {
     array[j] = temp;
   }
   return array;
+}
+
+// AUXILIAR FUNCTION 1.4.3
+// Transform timestamp to a beauty date
+function timeConverter(){
+  var a = new Date();
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var year = a.getFullYear();
+  var month = months[a.getMonth()];
+  var date = a.getDate();
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var sec = a.getSeconds();
+  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+  return time;
 }
 
 // Start at the end to secure that all of JS will be charge
