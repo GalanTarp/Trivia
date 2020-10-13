@@ -237,7 +237,7 @@ function SelectNumberQuestions(cat) {
   // Information to Player
   console.log(
     " ~<( TRIVIA GAME )>~ \n",
-    "Write the total of questions you going to answer (MIN 10 & MAX 50)************************** \n "
+    "Write the total of questions you going to answer (MIN 10 & MAX 50) \n "
   );
 
   //Start function depends os the answer of Player
@@ -307,6 +307,7 @@ function GetQuizCustom(category, n) {
 }
 
 // PRINCIPAL FUNCTION 1.4
+// Principal engine of the game that ask, check and repeat
 function MakeQuestion() {
   if (indexquestion < questions.length) {
     // Variables
@@ -423,12 +424,12 @@ function RandomAnswers(ans) {
     array.push(ans.incorrect_answers[0]);
   }
   // Randomize
-  return shuffleArray(array);
+  return ShuffleArray(array);
 }
 
 // AUXILIAR FUNCTION 1.4.2
 // Randomize array in-place using Durstenfeld shuffle algorithm
-function shuffleArray(array) {
+function ShuffleArray(array) {
   for (var i = array.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
     var temp = array[i];
