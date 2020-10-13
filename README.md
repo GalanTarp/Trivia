@@ -1,7 +1,7 @@
 # TriviaGame
 
-Its a Game Terminal based in the API of Open Trivia Database 
-https://opentdb.com/
+<p>Its a Game Terminal based in the API of Open Trivia Database </p>
+<p>https://opentdb.com/</p>
 
 <p>To play you just need to download the file and have install NodeJS in you PC.</p>
 <p>Next in your terminal access to the download file and execute trivia.js with this command:</p>
