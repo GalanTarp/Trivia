@@ -13,7 +13,7 @@
   <li>s -> To see the previous scores with dates.</li>
   <li>c -> to play a custom quiz with an specific category and number of questions (between 10 and 50).</li>
 </ul>
-<p>To response the questions write the index of the answer that is shown on screen. Have Fun!</p>
+<p>To response the questions write the index of the answer that is shown on screen and press ENTER. Have Fun!</p>
 
 <p>Now the explication of the game.</p>
 
